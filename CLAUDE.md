@@ -12,6 +12,8 @@ The full spec is in `docs/PRD.md`. Read it before starting any feature.
 
 **Stack:** Next.js (App Router, TypeScript) on Vercel · Supabase (Postgres, Auth, Storage, row-level security) · Inngest (background jobs) · Anthropic API · HighLevel API v2 via a Marketplace app (OAuth) · Fathom API · Firecrawl API.
 
+**Where the repo actually is (as of 2026-10-20, evening):** the Next.js app shell exists (`package.json`, `src/app/`, `src/styles/`, `src/lib/text/`, `.claude/commands/`) and `npm run check` passes. `supabase/`, `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. The Phase 0 plan is `plans/2026-10-20-phase-0-foundation.md`. Check that something exists before telling Tom to run it.
+
 ---
 
 ## Who you're working with
@@ -46,6 +48,8 @@ Probabilistic AI handles reasoning, and deterministic code handles execution. He
 ---
 
 ## Project structure
+
+This is the target layout. Create folders as the work calls for them, not as empty folders up front.
 
 ```
 .
@@ -162,6 +166,8 @@ Probabilistic AI handles reasoning, and deterministic code handles execution. He
 
 ## Commands
 
+Each one is a file in `.claude/commands/`.
+
 | Command | What it does |
 |---|---|
 | `/prime` | Read this file, `docs/PRD.md`, `context/` and open plans. Summarize where the project is and what's next |
@@ -178,9 +184,14 @@ Probabilistic AI handles reasoning, and deterministic code handles execution. He
 |---|---|
 | `npm run dev` | Start the app locally at http://localhost:3000 |
 | `npm run check` | Type check, lint, unit tests, RLS tests. Must pass before any step is called done |
-| `npm run db:migrate` | Apply new migrations to the local Supabase |
-| `npm run db:reset` | Rebuild the local database from migrations and seed (local only) |
-| `npm run inngest` | Start the Inngest dev server to watch background jobs |
+| `npm run typecheck` / `npm run lint` / `npm run test` | The three parts of `check`, runnable alone |
+| `npx vitest run src/lib/text/dashes.test.ts` | Run a single test file (Vitest). Add `-t "name"` for one test |
+| `npm run build` | Production build. Run it before shipping anything that touches config or routing |
+| `npm run db:migrate` | Apply new migrations to the local Supabase (added in Phase 0 Part B) |
+| `npm run db:reset` | Rebuild the local database from migrations and seed, local only (Part B) |
+| `npm run inngest` | Start the Inngest dev server to watch background jobs (Part F) |
+
+The `db:*` and `inngest` scripts don't exist until their plan part lands. RLS tests join `check` in Part B.
 
 ---
 
@@ -208,13 +219,15 @@ Don't rewrite a generator's README or a knowledge file wholesale without asking.
 
 **Phase:** 0, Foundation (see the PRD roadmap).
 
-**Done:** PRD, this file, skill inventory (`docs/skill-inventory.md`), GitHub repo `clickstocloses/command-center`, clickable mockup in Clicks to Closes branding.
+**Done:** PRD, this file, skill inventory (`docs/skill-inventory.md`), `.gitignore`, GitHub repo `clickstocloses/command-center`, Phase 0 plan, Part A of it (app shell: Next.js 16 with cache components on, brand tokens and fonts, Vitest, `npm run check`, slash commands, first validator `findDashes`). A clickable mockup in Clicks to Closes branding exists outside this repo; ask Tom for it before building UI from scratch.
 
-**Next up:**
-1. Port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
-2. Create the Supabase project, Vercel project and Inngest app, and connect them to the GitHub repo
-3. Register the HighLevel Marketplace app (OAuth plus Custom Page plus Shared Secret)
-4. SSO handshake end to end on a test sub-account
+**Next up** (Phase 0 plan parts, in order):
+1. Part B: Supabase project, first migrations, RLS tests. Needs Docker Desktop and the Supabase CLI on Tom's machine, and a Supabase project
+2. Part C: admin OTP login and staff table
+3. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
+4. Part E: Custom Page SSO handshake end to end on a test sub-account
+5. Part F: Inngest, usage metering, Vercel project and preview deploys
+6. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
 
 ## Maintain this file
 

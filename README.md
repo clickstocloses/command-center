@@ -8,4 +8,12 @@ The client portal and AI command center for Clicks to Closes, running inside Hig
 
 Stack: Next.js, Supabase, Vercel, Inngest, Anthropic API, HighLevel Marketplace app.
 
-Status: Phase 0 (foundation). No app code yet.
+Status: Phase 0 (foundation). App shell is up; see `plans/2026-10-20-phase-0-foundation.md`.
+
+## Run it
+
+```bash
+npm install
+npm run dev      # http://localhost:3000
+npm run check    # type check, lint, tests. Must pass before any step is done
+```

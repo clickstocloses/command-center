@@ -33,3 +33,6 @@ supabase/.branches/
 *.swp
 .vscode/*
 !.vscode/settings.json
+
+# TypeScript incremental build cache
+*.tsbuildinfo
