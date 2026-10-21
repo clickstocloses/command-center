@@ -1,0 +1,35 @@
+# Secrets: never commit
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+*.p12
+id_rsa*
+id_ed25519*
+*_hostinger*
+
+# Raw imports from old projects (contains real .env files)
+_import/
+
+# Dependencies and builds
+node_modules/
+.next/
+out/
+dist/
+coverage/
+.vercel/
+.inngest/
+supabase/.temp/
+supabase/.branches/
+
+# Local scratch
+.tmp/
+.playwright-mcp/
+*.log
+
+# OS and editor
+.DS_Store
+*.swp
+.vscode/*
+!.vscode/settings.json
