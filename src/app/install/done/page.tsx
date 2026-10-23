@@ -32,14 +32,20 @@ export default function InstallDonePage() {
 // anything the browser can type into a URL.
 async function InstalledName() {
   const raw = (await cookies()).get("install_result")?.value;
+  const name = parseInstalledName(raw);
+  if (!name) return null;
+  return (
+    <p>
+      Sub-account: <strong>{name}</strong>
+    </p>
+  );
+}
+
+function parseInstalledName(raw: string | undefined): string | null {
   if (!raw) return null;
   try {
-    const { name } = JSON.parse(raw) as { name?: string };
-    return name ? (
-      <p>
-        Sub-account: <strong>{name}</strong>
-      </p>
-    ) : null;
+    const parsed = JSON.parse(raw) as { name?: unknown };
+    return typeof parsed.name === "string" && parsed.name ? parsed.name : null;
   } catch {
     return null;
   }
