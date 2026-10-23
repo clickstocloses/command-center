@@ -12,7 +12,7 @@ The full spec is in `docs/PRD.md`. Read it before starting any feature.
 
 **Stack:** Next.js (App Router, TypeScript) on Vercel · Supabase (Postgres, Auth, Storage, row-level security) · Inngest (background jobs) · Anthropic API · HighLevel API v2 via a Marketplace app (OAuth) · Fathom API · Firecrawl API.
 
-**Where the repo actually is (as of 2026-10-22):** the Next.js app shell exists and `npm run check` passes. `supabase/` holds the first migration and seed, with RLS tests in `tests/rls/` that run against the local Docker stack. The cloud project is "Command Center" (ref `hblynaefpbskueyfghqj`). `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. Plans live in `plans/`. Check that something exists before telling Tom to run it.
+**Where the repo actually is (as of 2026-10-22):** the Next.js app shell, admin login (`/admin`) and the database foundation exist, and `npm run check` passes. `.env.local` points at the LOCAL Supabase stack for development; cloud keys sit in it commented with a `CLOUD_` prefix until Vercel is set up. `supabase/` holds the first migration and seed, with RLS tests in `tests/rls/` that run against the local Docker stack. The cloud project is "Command Center" (ref `hblynaefpbskueyfghqj`). `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. Plans live in `plans/`. Check that something exists before telling Tom to run it.
 
 ---
 
@@ -223,11 +223,10 @@ Don't rewrite a generator's README or a knowledge file wholesale without asking.
 
 **Done:** PRD, this file, skill inventory (`docs/skill-inventory.md`), `.gitignore`, GitHub repo `clickstocloses/command-center`, Phase 0 plan, Part A of it (app shell: Next.js 16 with cache components on, brand tokens and fonts, Vitest, `npm run check`, slash commands, first validator `findDashes`). A clickable mockup in Clicks to Closes branding exists outside this repo; ask Tom for it before building UI from scratch.
 
-Part B is done too: Supabase project, six foundation tables, RLS tests (see `docs/decisions/2026-10-22-database-trust-model.md`).
+Part B is done too: Supabase project, six foundation tables, RLS tests (see `docs/decisions/2026-10-22-database-trust-model.md`). Part C is done: admin login with email and one-time code, staff allowlist, permissions checklist, audit log, proxy. Locally, codes arrive in Mailpit at http://127.0.0.1:54324.
 
 **Next up** (Phase 0 plan parts, in order):
-1. Part C: admin OTP login and staff table
-2. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
+1. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
 3. Part E: Custom Page SSO handshake end to end on a test sub-account
 4. Part F: Inngest, usage metering, Vercel project and preview deploys
 5. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
