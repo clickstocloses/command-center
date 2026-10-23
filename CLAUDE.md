@@ -12,7 +12,7 @@ The full spec is in `docs/PRD.md`. Read it before starting any feature.
 
 **Stack:** Next.js (App Router, TypeScript) on Vercel · Supabase (Postgres, Auth, Storage, row-level security) · Inngest (background jobs) · Anthropic API · HighLevel API v2 via a Marketplace app (OAuth) · Fathom API · Firecrawl API.
 
-**Where the repo actually is (as of 2026-10-20, evening):** the Next.js app shell exists (`package.json`, `src/app/`, `src/styles/`, `src/lib/text/`, `.claude/commands/`) and `npm run check` passes. `supabase/`, `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. The Phase 0 plan is `plans/2026-10-20-phase-0-foundation.md`. Check that something exists before telling Tom to run it.
+**Where the repo actually is (as of 2026-10-22):** the Next.js app shell exists and `npm run check` passes. `supabase/` holds the first migration and seed, with RLS tests in `tests/rls/` that run against the local Docker stack. The cloud project is "Command Center" (ref `hblynaefpbskueyfghqj`). `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. Plans live in `plans/`. Check that something exists before telling Tom to run it.
 
 ---
 
@@ -187,11 +187,13 @@ Each one is a file in `.claude/commands/`.
 | `npm run typecheck` / `npm run lint` / `npm run test` | The three parts of `check`, runnable alone |
 | `npx vitest run src/lib/text/dashes.test.ts` | Run a single test file (Vitest). Add `-t "name"` for one test |
 | `npm run build` | Production build. Run it before shipping anything that touches config or routing |
-| `npm run db:migrate` | Apply new migrations to the local Supabase (added in Phase 0 Part B) |
-| `npm run db:reset` | Rebuild the local database from migrations and seed, local only (Part B) |
-| `npm run inngest` | Start the Inngest dev server to watch background jobs (Part F) |
+| `npm run db:start` / `db:stop` / `db:status` | The local Supabase stack in Docker. Studio is at http://127.0.0.1:54323 |
+| `npm run db:reset` | Rebuild the local database from migrations and seed, local only |
+| `npm run db:migrate` | Apply new migrations to the local database without wiping it |
+| `npm run test:rls` | RLS tests against the local stack. `check` runs them too, and skips with a message if the stack is down |
+| `npm run inngest` | Start the Inngest dev server to watch background jobs (Part F, not yet) |
 
-The `db:*` and `inngest` scripts don't exist until their plan part lands. RLS tests join `check` in Part B.
+Cloud schema changes: write the migration file, prove it locally, then apply the identical SQL to the cloud project through the Supabase connector's `apply_migration`, and rename its version row to match the file name. Never edit the cloud database by hand.
 
 ---
 
@@ -221,13 +223,14 @@ Don't rewrite a generator's README or a knowledge file wholesale without asking.
 
 **Done:** PRD, this file, skill inventory (`docs/skill-inventory.md`), `.gitignore`, GitHub repo `clickstocloses/command-center`, Phase 0 plan, Part A of it (app shell: Next.js 16 with cache components on, brand tokens and fonts, Vitest, `npm run check`, slash commands, first validator `findDashes`). A clickable mockup in Clicks to Closes branding exists outside this repo; ask Tom for it before building UI from scratch.
 
+Part B is done too: Supabase project, six foundation tables, RLS tests (see `docs/decisions/2026-10-22-database-trust-model.md`).
+
 **Next up** (Phase 0 plan parts, in order):
-1. Part B: Supabase project, first migrations, RLS tests. Needs Docker Desktop and the Supabase CLI on Tom's machine, and a Supabase project
-2. Part C: admin OTP login and staff table
-3. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
-4. Part E: Custom Page SSO handshake end to end on a test sub-account
-5. Part F: Inngest, usage metering, Vercel project and preview deploys
-6. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
+1. Part C: admin OTP login and staff table
+2. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
+3. Part E: Custom Page SSO handshake end to end on a test sub-account
+4. Part F: Inngest, usage metering, Vercel project and preview deploys
+5. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
 
 ## Maintain this file
 
