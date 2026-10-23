@@ -1,3 +1,4 @@
+import { randomBytes, timingSafeEqual } from "node:crypto";
 import { appUrl } from "@/lib/supabase/env";
 import { GHL_API_BASE, GHL_AUTHORIZE_URL, GHL_SCOPES, ghlEnv } from "./env";
 
@@ -15,19 +16,46 @@ export function callbackUrl(): string {
   return `${appUrl()}/api/oauth/callback`;
 }
 
-export function buildInstallUrl(input: { clientId: string; appId: string; redirectUri: string }): string {
+export function buildInstallUrl(input: {
+  clientId: string;
+  appId: string;
+  redirectUri: string;
+  state?: string;
+}): string {
   const url = new URL(GHL_AUTHORIZE_URL);
   url.searchParams.set("response_type", "code");
   url.searchParams.set("redirect_uri", input.redirectUri);
   url.searchParams.set("client_id", input.clientId);
   url.searchParams.set("scope", GHL_SCOPES.join(" "));
   url.searchParams.set("version_id", input.appId);
+  if (input.state) url.searchParams.set("state", input.state);
   return url.toString();
 }
 
-export function installUrl(): string {
+export function installUrl(state?: string): string {
   const { clientId, appId } = ghlEnv();
-  return buildInstallUrl({ clientId, appId, redirectUri: callbackUrl() });
+  return buildInstallUrl({ clientId, appId, redirectUri: callbackUrl(), state });
+}
+
+export const OAUTH_STATE_COOKIE = "oauth_state";
+
+export function newOauthState(): string {
+  return randomBytes(32).toString("base64url");
+}
+
+/**
+ * CSRF check for the callback. Installs started from our own install link carry
+ * a state that must match the cookie we set. Installs started from HighLevel's
+ * marketplace link carry no state and no cookie, and are allowed: the code is
+ * single-use, the exchange needs the client secret, and only locations inside
+ * Tom's agency can install a private "agency only" app.
+ */
+export function verifyOauthState(stateParam: string | null, stateCookie: string | null): "ok" | "marketplace" | "mismatch" {
+  if (!stateParam && !stateCookie) return "marketplace";
+  if (!stateParam || !stateCookie) return "mismatch";
+  const a = Buffer.from(stateParam);
+  const b = Buffer.from(stateCookie);
+  return a.length === b.length && timingSafeEqual(a, b) ? "ok" : "mismatch";
 }
 
 /** Validates HighLevel's /oauth/token response. We only ever want location tokens. */

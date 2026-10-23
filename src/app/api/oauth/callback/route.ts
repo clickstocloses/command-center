@@ -2,7 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { writeAuditLog } from "@/lib/audit/log";
 import { saveInstallation, type LocationProfile } from "@/lib/ghl/installations";
 import { fetchLocationWithToken } from "@/lib/ghl/locations";
-import { exchangeCodeForTokens } from "@/lib/ghl/oauth";
+import { OAUTH_STATE_COOKIE, exchangeCodeForTokens, verifyOauthState } from "@/lib/ghl/oauth";
 
 /**
  * HighLevel sends the person here after they approve the install.
@@ -16,6 +16,15 @@ export async function GET(request: NextRequest) {
 
   if (deniedReason || !code) {
     return NextResponse.redirect(new URL(`/install/error?reason=${deniedReason ? "denied" : "no_code"}`, origin));
+  }
+
+  const stateCheck = verifyOauthState(
+    request.nextUrl.searchParams.get("state"),
+    request.cookies.get(OAUTH_STATE_COOKIE)?.value ?? null,
+  );
+  if (stateCheck === "mismatch") {
+    console.error("oauth callback: state mismatch");
+    return NextResponse.redirect(new URL("/install/error?reason=state", origin));
   }
 
   try {
@@ -41,7 +50,11 @@ export async function GET(request: NextRequest) {
       after: { location_id: tokens.locationId, scopes: tokens.scopes, new_client: saved.isNewClient },
     });
 
-    return NextResponse.redirect(new URL(`/install/done?location=${encodeURIComponent(tokens.locationId)}`, origin));
+    const done = NextResponse.redirect(
+      new URL(`/install/done?location=${encodeURIComponent(tokens.locationId)}`, origin),
+    );
+    done.cookies.delete({ name: OAUTH_STATE_COOKIE, path: "/api/oauth" });
+    return done;
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);
     console.error("oauth callback failed:", message);

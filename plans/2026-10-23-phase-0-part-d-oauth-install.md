@@ -18,7 +18,7 @@
 - **Location tokens only.** The app targets sub-accounts, so every install yields a token with `userType: Location` and a `locationId`. An agency-level token (no `locationId`) is rejected with a clear message.
 - **The install creates the client.** After the exchange, `GET /locations/{id}` fills name, time zone and website. Status starts at `onboarding_not_started`. Re-installing updates the installation row and clears `uninstalled_at`; the client row keeps its data.
 - **Refresh on demand, not on a timer, for now.** `getLocationAccessToken()` refreshes when the token expires within 5 minutes and on a 401. The Inngest cron that refreshes ahead of expiry is Part F.
-- **No `state` parameter.** Installs start from HighLevel's own marketplace link, which doesn't carry one. The code is single-use and the exchange needs the client secret, so the exposure is someone attaching a location they control inside Tom's agency to this app, which changes nothing.
+- **`state` when we start the flow, tolerated when HighLevel does.** `/api/oauth/install` sets a random state in a short-lived HttpOnly cookie and puts it in the authorize URL; the callback compares them in constant time. Installs started from HighLevel's own marketplace link carry no state and no cookie, and are allowed: the code is single-use, the exchange needs the client secret, and only locations inside Tom's agency can install a private "agency only" app. A state present on one side but not the other is rejected.
 - **Public result pages.** `/install/done` and `/install/error` need no login, because the person installing may be a team member who isn't signed into the admin app in that browser.
 
 ## File structure

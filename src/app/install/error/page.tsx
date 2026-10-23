@@ -7,6 +7,7 @@ type SearchParams = Promise<{ reason?: string }>;
 const REASONS: Record<string, string> = {
   denied: "The install was cancelled before it finished.",
   no_code: "HighLevel didn't send an authorization code. Start the install again from the link.",
+  state: "This install didn't start from our link, or the browser lost track of it. Start again from the install link.",
   agency_token:
     "That was an agency-level install. Command Center installs on a sub-account: pick the client's location when HighLevel asks.",
   exchange: "HighLevel refused the token exchange. The app's client secret or redirect URL may be wrong.",

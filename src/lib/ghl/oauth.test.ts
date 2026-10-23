@@ -1,6 +1,32 @@
 import { describe, expect, it } from "vitest";
 import { GHL_SCOPES } from "./env";
-import { buildInstallUrl, parseTokenResponse } from "./oauth";
+import { buildInstallUrl, newOauthState, parseTokenResponse, verifyOauthState } from "./oauth";
+
+describe("oauth state", () => {
+  it("is included in the install URL when given", () => {
+    const url = new URL(buildInstallUrl({ clientId: "c", appId: "a", redirectUri: "http://x/cb", state: "abc" }));
+    expect(url.searchParams.get("state")).toBe("abc");
+  });
+
+  it("is random and long", () => {
+    expect(newOauthState()).not.toBe(newOauthState());
+    expect(newOauthState().length).toBeGreaterThanOrEqual(40);
+  });
+
+  it("accepts a matching state and cookie", () => {
+    expect(verifyOauthState("s1", "s1")).toBe("ok");
+  });
+
+  it("allows a marketplace-started install with neither", () => {
+    expect(verifyOauthState(null, null)).toBe("marketplace");
+  });
+
+  it("rejects a mismatch, a missing cookie, or a missing param", () => {
+    expect(verifyOauthState("s1", "s2")).toBe("mismatch");
+    expect(verifyOauthState("s1", null)).toBe("mismatch");
+    expect(verifyOauthState(null, "s1")).toBe("mismatch");
+  });
+});
 
 describe("buildInstallUrl", () => {
   it("carries the client id, the callback and every scope", () => {
