@@ -4,6 +4,8 @@ import { saveInstallation, type LocationProfile } from "@/lib/ghl/installations"
 import { fetchLocationWithToken } from "@/lib/ghl/locations";
 import { OAUTH_STATE_COOKIE, exchangeCodeForTokens, verifyOauthState } from "@/lib/ghl/oauth";
 
+export const INSTALL_RESULT_COOKIE = "install_result";
+
 /**
  * HighLevel sends the person here after they approve the install.
  * Code -> tokens -> location profile -> encrypted row -> audit -> done page.
@@ -50,10 +52,16 @@ export async function GET(request: NextRequest) {
       after: { location_id: tokens.locationId, scopes: tokens.scopes, new_client: saved.isNewClient },
     });
 
-    const done = NextResponse.redirect(
-      new URL(`/install/done?location=${encodeURIComponent(tokens.locationId)}`, origin),
-    );
+    const done = NextResponse.redirect(new URL("/install/done", origin));
     done.cookies.delete({ name: OAUTH_STATE_COOKIE, path: "/api/oauth" });
+    // The done page shows the name from this cookie, so it never has to query by a client-supplied id.
+    done.cookies.set(INSTALL_RESULT_COOKIE, JSON.stringify({ name: profile.name ?? tokens.locationId }), {
+      httpOnly: true,
+      sameSite: "lax",
+      secure: process.env.NODE_ENV === "production",
+      path: "/install",
+      maxAge: 5 * 60,
+    });
     return done;
   } catch (cause) {
     const message = cause instanceof Error ? cause.message : String(cause);

@@ -1,12 +1,10 @@
 import { Suspense } from "react";
 import Link from "next/link";
+import { cookies } from "next/headers";
 import { StatusChip } from "@/components/brand/StatusChip";
 import { Wordmark } from "@/components/brand/Wordmark";
-import { createSecretSupabase } from "@/lib/supabase/server";
 
-type SearchParams = Promise<{ location?: string }>;
-
-export default function InstallDonePage({ searchParams }: { searchParams: SearchParams }) {
+export default function InstallDonePage() {
   return (
     <main className="page" style={{ maxWidth: "32rem" }}>
       <header className="row" style={{ justifyContent: "space-between" }}>
@@ -15,8 +13,8 @@ export default function InstallDonePage({ searchParams }: { searchParams: Search
       </header>
       <section className="panel">
         <h2>Command Center is installed</h2>
-        <Suspense fallback={<p className="muted">Checking the account</p>}>
-          <InstalledLocation searchParams={searchParams} />
+        <Suspense fallback={null}>
+          <InstalledName />
         </Suspense>
         <p className="muted">
           The client now shows on the admin dashboard, and the Command Center menu item appears in their
@@ -30,21 +28,19 @@ export default function InstallDonePage({ searchParams }: { searchParams: Search
   );
 }
 
-// Reads the client name with the server key so this page works without a login.
-// Only the name is shown, and only for a location that was just installed.
-async function InstalledLocation({ searchParams }: { searchParams: SearchParams }) {
-  const { location } = await searchParams;
-  if (!location) return null;
-
-  const { data } = await createSecretSupabase()
-    .from("clients")
-    .select("name")
-    .eq("ghl_location_id", location)
-    .maybeSingle();
-
-  return (
-    <p>
-      Sub-account: <strong>{data?.name ?? location}</strong>
-    </p>
-  );
+// The callback leaves the name in a short-lived cookie. No database lookup from
+// anything the browser can type into a URL.
+async function InstalledName() {
+  const raw = (await cookies()).get("install_result")?.value;
+  if (!raw) return null;
+  try {
+    const { name } = JSON.parse(raw) as { name?: string };
+    return name ? (
+      <p>
+        Sub-account: <strong>{name}</strong>
+      </p>
+    ) : null;
+  } catch {
+    return null;
+  }
 }
