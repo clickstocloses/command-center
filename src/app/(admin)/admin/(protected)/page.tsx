@@ -22,9 +22,14 @@ const STATUS_LABELS: Record<string, string> = {
 export default function AdminDashboardPage() {
   return (
     <>
-      <section>
-        <h1>Clients</h1>
-        <p className="muted">Every sub-account with Command Center installed.</p>
+      <section className="row" style={{ justifyContent: "space-between", alignItems: "flex-end" }}>
+        <div>
+          <h1>Clients</h1>
+          <p className="muted">Every sub-account with Command Center installed.</p>
+        </div>
+        <a className="button" href="/api/oauth/install">
+          Install on a sub-account
+        </a>
       </section>
       <Suspense fallback={<p className="muted">Loading clients</p>}>
         <ClientTable />
