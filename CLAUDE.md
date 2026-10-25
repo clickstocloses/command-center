@@ -182,7 +182,8 @@ Each one is a file in `.claude/commands/`.
 
 | Script | Use |
 |---|---|
-| `npm run dev` | Start the app locally at http://localhost:3000 |
+| `npm run up` | After a restart: starts Docker Desktop if needed, the local Supabase stack, then the dev server. Use this one |
+| `npm run dev` | Start only the app at http://localhost:3000 (Docker and `db:start` must already be running) |
 | `npm run check` | Type check, lint, unit tests, RLS tests. Must pass before any step is called done |
 | `npm run typecheck` / `npm run lint` / `npm run test` | The three parts of `check`, runnable alone |
 | `npx vitest run src/lib/text/dashes.test.ts` | Run a single test file (Vitest). Add `-t "name"` for one test |

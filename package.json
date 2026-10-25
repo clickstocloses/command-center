@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "next dev",
+    "up": "node scripts/dev-up.mjs",
     "build": "next build",
     "start": "next start",
     "lint": "eslint",

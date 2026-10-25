@@ -14,6 +14,6 @@ Status: Phase 0 (foundation). App shell is up; see `plans/2026-10-20-phase-0-fou
 
 ```bash
 npm install
-npm run dev      # http://localhost:3000
+npm run up       # Docker + local Supabase + dev server at http://localhost:3000
 npm run check    # type check, lint, tests. Must pass before any step is done
 ```
