@@ -8,7 +8,7 @@
 
 **Tech Stack:** Vercel CLI, Next.js 16 route handlers and client components, Node `crypto` (AES-256-CBC with OpenSSL key derivation to match CryptoJS, HMAC-SHA256 for session tokens), Supabase secret client, Vitest.
 
-**Status:** Planned 2026-11-04.
+**Status:** In progress. Part 2 (Tasks 7 to 11, the handshake code) done 2026-11-04 on `feat/part-e-vercel-sso`, proven locally with curl and the RLS suite. Part 1 (going online) and Part 3 (end to end) wait on Tom: Vercel CLI upgrade and the foundation merge to `main`.
 
 ---
 
