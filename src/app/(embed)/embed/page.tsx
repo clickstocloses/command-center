@@ -1,21 +1,7 @@
-import { StatusChip } from "@/components/brand/StatusChip";
-import { Wordmark } from "@/components/brand/Wordmark";
+import { EmbedApp } from "./EmbedApp";
 
-// Placeholder until Part E of the Phase 0 plan adds the HighLevel SSO handshake.
+// Loaded inside the HighLevel Custom Page iframe. Everything that needs to know
+// who is asking happens in EmbedApp after the single sign-on handshake.
 export default function EmbedPage() {
-  return (
-    <main className="page">
-      <header className="row" style={{ justifyContent: "space-between" }}>
-        <Wordmark />
-        <StatusChip label="Onboarding not started" />
-      </header>
-      <section className="panel">
-        <h2>Welcome to Command Center</h2>
-        <p className="muted">
-          This page will load inside your HighLevel account. Single sign-on is not
-          wired up yet.
-        </p>
-      </section>
-    </main>
-  );
+  return <EmbedApp />;
 }
