@@ -17,7 +17,7 @@ export default function InstallDonePage() {
           <InstalledName />
         </Suspense>
         <p className="muted">
-          The client now shows on the admin dashboard, and the Command Center menu item appears in their
+          Each client now shows on the admin dashboard, and the Command Center menu item appears in their
           sub-account.
         </p>
         <Link className="button" href="/admin">
@@ -28,25 +28,39 @@ export default function InstallDonePage() {
   );
 }
 
-// The callback leaves the name in a short-lived cookie. No database lookup from
+// The callback leaves the names in a short-lived cookie. No database lookup from
 // anything the browser can type into a URL.
 async function InstalledName() {
   const raw = (await cookies()).get("install_result")?.value;
-  const name = parseInstalledName(raw);
-  if (!name) return null;
+  const names = parseInstalledNames(raw);
+  if (names.length === 0) return null;
+  if (names.length === 1) {
+    return (
+      <p>
+        Sub-account: <strong>{names[0]}</strong>
+      </p>
+    );
+  }
   return (
-    <p>
-      Sub-account: <strong>{name}</strong>
-    </p>
+    <>
+      <p>Sub-accounts:</p>
+      <ul>
+        {names.map((name) => (
+          <li key={name}>
+            <strong>{name}</strong>
+          </li>
+        ))}
+      </ul>
+    </>
   );
 }
 
-function parseInstalledName(raw: string | undefined): string | null {
-  if (!raw) return null;
+function parseInstalledNames(raw: string | undefined): string[] {
+  if (!raw) return [];
   try {
-    const parsed = JSON.parse(raw) as { name?: unknown };
-    return typeof parsed.name === "string" && parsed.name ? parsed.name : null;
+    const parsed = JSON.parse(raw) as { names?: unknown };
+    return Array.isArray(parsed.names) ? parsed.names.filter((name): name is string => typeof name === "string" && name !== "") : [];
   } catch {
-    return null;
+    return [];
   }
 }

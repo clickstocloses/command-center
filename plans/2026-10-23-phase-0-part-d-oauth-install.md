@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js route handlers, Node `crypto`, HighLevel API v2 at `services.leadconnectorhq.com`, Supabase secret client.
 
-**Status:** In progress 2026-10-23. Portal setup done the same day (see `knowledge/ghl-facts.md`).
+**Status:** In progress. Portal setup done 2026-10-23. First real install attempt on 2026-11-04 failed because HighLevel returned an agency token; the callback now handles both kinds (see Decisions). Waiting on the `oauth.write` scope in the portal and a reinstall.
 
 ---
 
@@ -19,6 +19,7 @@
 - **The install creates the client.** After the exchange, `GET /locations/{id}` fills name, time zone and website. Status starts at `onboarding_not_started`. Re-installing updates the installation row and clears `uninstalled_at`; the client row keeps its data.
 - **Refresh on demand, not on a timer, for now.** `getLocationAccessToken()` refreshes when the token expires within 5 minutes and on a 401. The Inngest cron that refreshes ahead of expiry is Part F.
 - **`state` when we start the flow, tolerated when HighLevel does.** `/api/oauth/install` sets a random state in a short-lived HttpOnly cookie and puts it in the authorize URL; the callback compares them in constant time. Installs started from HighLevel's own marketplace link carry no state and no cookie, and are allowed: the code is single-use, the exchange needs the client secret, and only locations inside Tom's agency can install a private "agency only" app. A state present on one side but not the other is rejected.
+- **Agency installs are handled, not rejected (2026-11-04).** HighLevel returns an agency token plus `approvedLocations` when an agency admin picks sub-accounts. The agency token is stored in `ghl_agency_tokens`, a location token is minted per approved location with `POST /oauth/locationToken` (scope `oauth.write`), and those installs carry `token_source = 'agency'` with no refresh token: they are re-minted from the agency token on expiry.
 - **Public result pages.** `/install/done` and `/install/error` need no login, because the person installing may be a team member who isn't signed into the admin app in that browser.
 
 ## File structure

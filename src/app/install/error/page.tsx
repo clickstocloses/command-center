@@ -8,8 +8,10 @@ const REASONS: Record<string, string> = {
   denied: "The install was cancelled before it finished.",
   no_code: "HighLevel didn't send an authorization code. Start the install again from the link.",
   state: "This install didn't start from our link, or the browser lost track of it. Start again from the install link.",
-  agency_token:
-    "That was an agency-level install. Command Center installs on a sub-account: pick the client's location when HighLevel asks.",
+  no_locations:
+    "HighLevel approved the install but no sub-accounts were selected. Start again and tick at least one sub-account.",
+  location_token:
+    "HighLevel wouldn't issue a sub-account token from the agency install. The app may be missing the oauth.write scope in the developer portal.",
   exchange: "HighLevel refused the token exchange. The app's client secret or redirect URL may be wrong.",
   save: "The install succeeded at HighLevel but couldn't be saved on our side. Tell Tom; the server log has the cause.",
 };

@@ -17,6 +17,7 @@ export const GHL_SCOPES = [
   "locations/customFields.write",
   "saas/location.read",
   "oauth.readonly",
+  "oauth.write",
 ] as const;
 
 function required(name: string): string {
