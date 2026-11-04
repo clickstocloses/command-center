@@ -12,7 +12,7 @@ The full spec is in `docs/PRD.md`. Read it before starting any feature.
 
 **Stack:** Next.js (App Router, TypeScript) on Vercel · Supabase (Postgres, Auth, Storage, row-level security) · Inngest (background jobs) · Anthropic API · HighLevel API v2 via a Marketplace app (OAuth) · Fathom API · Firecrawl API.
 
-**Where the repo actually is (as of 2026-10-22):** the Next.js app shell, admin login (`/admin`) and the database foundation exist, and `npm run check` passes. `.env.local` points at the LOCAL Supabase stack for development; cloud keys sit in it commented with a `CLOUD_` prefix until Vercel is set up. `supabase/` holds the first migration and seed, with RLS tests in `tests/rls/` that run against the local Docker stack. The cloud project is "Command Center" (ref `hblynaefpbskueyfghqj`). `generators/`, `knowledge/`, `context/` and `workflows/` don't exist yet. Plans live in `plans/`. Check that something exists before telling Tom to run it.
+**Where the repo actually is (as of 2026-11-04):** the Next.js app shell, admin login (`/admin`), the database foundation and the HighLevel OAuth install (`src/lib/ghl/`) exist, and `npm run check` passes. `.env.local` points at the LOCAL Supabase stack for development; cloud keys sit in it commented with a `CLOUD_` prefix until Vercel is set up. `supabase/` holds the migrations and seed, with RLS tests in `tests/rls/` that run against the local Docker stack. The cloud project is "Command Center" (ref `hblynaefpbskueyfghqj`). `knowledge/` holds only `ghl-facts.md` so far. `generators/`, `context/` and `workflows/` don't exist yet. Plans live in `plans/`. Check that something exists before telling Tom to run it.
 
 ---
 
@@ -226,11 +226,12 @@ Don't rewrite a generator's README or a knowledge file wholesale without asking.
 
 Part B is done too: Supabase project, six foundation tables, RLS tests (see `docs/decisions/2026-10-22-database-trust-model.md`). Part C is done: admin login with email and one-time code, staff allowlist, permissions checklist, audit log, proxy. Locally, codes arrive in Mailpit at http://127.0.0.1:54324.
 
+Part D is done (2026-11-04): the Marketplace app "Command Center" (private, draft, app id in `.env.local`) with 14 scopes, the OAuth install flow, encrypted token storage and `ghlFetch`. Agency installs return an agency token; see the Part D plan's Decisions and `knowledge/ghl-facts.md`. Four demo sub-accounts are installed locally. The app runs only on Tom's Mac until Part F.
+
 **Next up** (Phase 0 plan parts, in order):
-1. Part D: HighLevel Marketplace app registration (Tom) and the OAuth callback
-3. Part E: Custom Page SSO handshake end to end on a test sub-account
-4. Part F: Inngest, usage metering, Vercel project and preview deploys
-5. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
+1. Part E: Custom Page SSO handshake end to end on a test sub-account
+2. Part F: Inngest, usage metering, Vercel project and preview deploys
+3. In parallel, port the Phase 1 rows in `docs/skill-inventory.md` (`/port-skill` on each)
 
 ## Maintain this file
 

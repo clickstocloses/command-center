@@ -8,7 +8,7 @@
 
 **Tech Stack:** Next.js route handlers, Node `crypto`, HighLevel API v2 at `services.leadconnectorhq.com`, Supabase secret client.
 
-**Status:** In progress. Portal setup done 2026-10-23. First real install attempt on 2026-11-04 failed because HighLevel returned an agency token; the callback now handles both kinds (see Decisions). Waiting on the `oauth.write` scope in the portal and a reinstall.
+**Status:** Done 2026-11-04. Portal setup 2026-10-23. The first real install returned an agency token with no locations; the callback now handles agency installs (see Decisions) and the proof run installed four demo sub-accounts, read each through the API with its stored token, and force-renewed one through the agency token.
 
 ---
 
@@ -66,10 +66,10 @@ src/app/(admin)/admin/(protected)/page.tsx  adds an "Install on a sub-account" b
 
 ### Task D5: Prove it
 
-- [ ] `npm run check` and `npm run build` green.
-- [ ] Tom installs on a test sub-account through the portal's install link (or the dashboard button). Expected: lands on `/install/done` with the location name; `/admin` lists the new client; `ghl_installations` has one row with encrypted tokens (never plain text); `audit_log` has `ghl.install`.
-- [ ] Record what the real token response and location response looked like (field names only) in `knowledge/ghl-facts.md`.
-- [ ] Commit. Update CLAUDE.md status.
+- [x] `npm run check` and `npm run build` green.
+- [x] Tom installs on a test sub-account through the portal's install link (or the dashboard button). Expected: lands on `/install/done` with the location name; `/admin` lists the new client; `ghl_installations` has one row with encrypted tokens (never plain text); `audit_log` has `ghl.install`.
+- [x] Record what the real token response and location response looked like (field names only) in `knowledge/ghl-facts.md`.
+- [x] Commit. Update CLAUDE.md status.
 
 ### Part D done when
 
