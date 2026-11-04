@@ -101,7 +101,7 @@ Expected: "Connected GitHub repository". If it says the Vercel GitHub app isn't 
 
 The values come from `.env.local`: the three `# CLOUD_` lines hold the cloud Supabase values, the `GHL_*` lines are the same in production, and `EMBED_SESSION_SECRET` is new.
 
-- [ ] **Step 1: Add the embed secret locally** (the `[` characters below are literal; this appends two lines to `.env.local` and `.env.example`).
+- [x] **Step 1: Add the embed secret locally** (the `[` characters below are literal; this appends two lines to `.env.local` and `.env.example`).
 
 ```bash
 printf '\n# Part E: signs the in-memory embed session token. 32 random bytes, base64\nEMBED_SESSION_SECRET=%s\n' "$(openssl rand -base64 32)" >> .env.local
@@ -200,7 +200,7 @@ git add .env.example CLAUDE.md && git commit -m "Record the Vercel production UR
 **Files:**
 - Create: `src/lib/ghl/sso.ts`, `src/lib/ghl/sso.test.ts`
 
-- [ ] **Step 1: Failing test.** The fixture was made with `openssl enc -aes-256-cbc -md md5 -pass pass:test-shared-secret -base64 -A`, which is byte-for-byte what `CryptoJS.AES.encrypt` produces.
+- [x] **Step 1: Failing test.** The fixture was made with `openssl enc -aes-256-cbc -md md5 -pass pass:test-shared-secret -base64 -A`, which is byte-for-byte what `CryptoJS.AES.encrypt` produces.
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -242,9 +242,9 @@ describe("decryptSsoPayload", () => {
 });
 ```
 
-- [ ] **Step 2: Run, expect failure.** `npx vitest run src/lib/ghl/sso.test.ts` fails with "Failed to load" or "is not a function".
+- [x] **Step 2: Run, expect failure.** `npx vitest run src/lib/ghl/sso.test.ts` fails with "Failed to load" or "is not a function".
 
-- [ ] **Step 3: Implement.**
+- [x] **Step 3: Implement.**
 
 ```ts
 import { createDecipheriv, createHash } from "node:crypto";
@@ -332,9 +332,9 @@ export function decryptSsoPayload(payloadBase64: string, sharedSecret: string): 
 }
 ```
 
-- [ ] **Step 4: Run, expect pass.** `npx vitest run src/lib/ghl/sso.test.ts` shows 4 passed.
+- [x] **Step 4: Run, expect pass.** `npx vitest run src/lib/ghl/sso.test.ts` shows 4 passed.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 git add src/lib/ghl/sso.ts src/lib/ghl/sso.test.ts && git commit -m "Decrypt the HighLevel Custom Page SSO payload with Node crypto"
@@ -345,7 +345,7 @@ git add src/lib/ghl/sso.ts src/lib/ghl/sso.test.ts && git commit -m "Decrypt the
 **Files:**
 - Create: `src/lib/auth/embed-session.ts`, `src/lib/auth/embed-session.test.ts`
 
-- [ ] **Step 1: Failing test.**
+- [x] **Step 1: Failing test.**
 
 ```ts
 import { describe, expect, it } from "vitest";
@@ -385,9 +385,9 @@ describe("embed session", () => {
 });
 ```
 
-- [ ] **Step 2: Run, expect failure.** `npx vitest run src/lib/auth/embed-session.test.ts`
+- [x] **Step 2: Run, expect failure.** `npx vitest run src/lib/auth/embed-session.test.ts`
 
-- [ ] **Step 3: Implement.**
+- [x] **Step 3: Implement.**
 
 ```ts
 import { createHmac, timingSafeEqual } from "node:crypto";
@@ -450,9 +450,9 @@ export function embedSessionSecret(): Buffer {
 }
 ```
 
-- [ ] **Step 4: Run, expect pass.** 4 passed.
+- [x] **Step 4: Run, expect pass.** 4 passed.
 
-- [ ] **Step 5: Commit.**
+- [x] **Step 5: Commit.**
 
 ```bash
 git add src/lib/auth/embed-session.ts src/lib/auth/embed-session.test.ts && git commit -m "Add the signed in-memory embed session token"
@@ -463,7 +463,7 @@ git add src/lib/auth/embed-session.ts src/lib/auth/embed-session.test.ts && git 
 **Files:**
 - Create: `src/lib/auth/embed-client.ts`, `src/app/api/embed/session/route.ts`, `src/app/(embed)/embed/status.ts`
 
-- [ ] **Step 1: Status labels** (shared by the API, the chip and the copy).
+- [x] **Step 1: Status labels** (shared by the API, the chip and the copy).
 
 ```ts
 // src/app/(embed)/embed/status.ts
@@ -481,7 +481,7 @@ export function clientStatusLabel(status: string): string {
 }
 ```
 
-- [ ] **Step 2: The checks.** Secret key, scoped by the location from the decrypted payload.
+- [x] **Step 2: The checks.** Secret key, scoped by the location from the decrypted payload.
 
 ```ts
 // src/lib/auth/embed-client.ts
@@ -544,7 +544,7 @@ export async function resolveEmbedClient(user: SsoUser): Promise<ResolveResult> 
 }
 ```
 
-- [ ] **Step 3: The route.** POST only. Never logs the payload.
+- [x] **Step 3: The route.** POST only. Never logs the payload.
 
 ```ts
 // src/app/api/embed/session/route.ts
@@ -611,9 +611,9 @@ export async function POST(request: NextRequest) {
 }
 ```
 
-- [ ] **Step 4: Typecheck and lint.** `npm run typecheck && npm run lint` both clean. If the `ghl_installations!inner` select trips the type of `client.ghl_installations`, keep the cast shown above; it's the one place the join shape is read.
+- [x] **Step 4: Typecheck and lint.** `npm run typecheck && npm run lint` both clean. If the `ghl_installations!inner` select trips the type of `client.ghl_installations`, keep the cast shown above; it's the one place the join shape is read.
 
-- [ ] **Step 5: Local proof with curl.** With `npm run up` running, encrypt a payload for the local demo install "Demo Onboarding" (`yXnrwLhFCcFhLtGsQhpr`) using the real local shared secret, then post it:
+- [x] **Step 5: Local proof with curl.** With `npm run up` running, encrypt a payload for the local demo install "Demo Onboarding" (`yXnrwLhFCcFhLtGsQhpr`) using the real local shared secret, then post it:
 
 ```bash
 SECRET="$(grep -E '^GHL_SHARED_SECRET=' .env.local | cut -d= -f2-)"
@@ -623,7 +623,7 @@ curl -s -X POST http://localhost:3000/api/embed/session -H 'Content-Type: applic
 
 Expected: JSON with a `token`, `client.name` "Demo Onboarding", `client.statusLabel` "Onboarding not started". A second call with `activeLocation` set to `loc_nope` returns `{"error":"not_installed"}` with 403. A call with `"payload":"garbage"` returns 401.
 
-- [ ] **Step 6: Commit.**
+- [x] **Step 6: Commit.**
 
 ```bash
 git add src/lib/auth/embed-client.ts src/app/api/embed/session/route.ts "src/app/(embed)/embed/status.ts" && git commit -m "Add the embed session route: decrypt SSO, check the client, issue a token"
@@ -635,7 +635,7 @@ git add src/lib/auth/embed-client.ts src/app/api/embed/session/route.ts "src/app
 - Create: `src/lib/embed/handshake.ts`, `src/app/(embed)/embed/EmbedApp.tsx`
 - Modify: `src/app/(embed)/embed/page.tsx`
 
-- [ ] **Step 1: The handshake helper.** Browser only. Resolves with the encrypted payload or rejects after the timeout (which is what happens when the page is opened outside HighLevel).
+- [x] **Step 1: The handshake helper.** Browser only. Resolves with the encrypted payload or rejects after the timeout (which is what happens when the page is opened outside HighLevel).
 
 ```ts
 // src/lib/embed/handshake.ts
@@ -673,7 +673,7 @@ export function requestUserData(timeoutMs = 8000): Promise<string> {
 }
 ```
 
-- [ ] **Step 2: The client component.** Token in React state only. Re-runs the handshake on every load.
+- [x] **Step 2: The client component.** Token in React state only. Re-runs the handshake on every load.
 
 ```tsx
 // src/app/(embed)/embed/EmbedApp.tsx
@@ -778,7 +778,7 @@ export function EmbedApp() {
 }
 ```
 
-- [ ] **Step 3: The page.** Replace the placeholder.
+- [x] **Step 3: The page.** Replace the placeholder.
 
 ```tsx
 // src/app/(embed)/embed/page.tsx
@@ -791,11 +791,11 @@ export default function EmbedPage() {
 }
 ```
 
-- [ ] **Step 4: Check and build.** `npm run check` green, `npm run build` green (the route type import `EmbedSessionResponse` is a type-only import, so no server code reaches the browser bundle; confirm with `grep -c sharedSecret .next/static -r` returning 0).
+- [x] **Step 4: Check and build.** `npm run check` green, `npm run build` green (the route type import `EmbedSessionResponse` is a type-only import, so no server code reaches the browser bundle; confirm with `grep -c sharedSecret .next/static -r` returning 0).
 
-- [ ] **Step 5: Look at it outside HighLevel.** Open http://localhost:3000/embed. Expected: the "We couldn't open Command Center" panel with the "Open Command Center from the menu inside your HighLevel account." line, in brand styling, within a second.
+- [x] **Step 5: Look at it outside HighLevel.** Open http://localhost:3000/embed. Expected: the "We couldn't open Command Center" panel with the "Open Command Center from the menu inside your HighLevel account." line, in brand styling, within a second.
 
-- [ ] **Step 6: Commit and push** (the push gives a Vercel preview URL for the UI, once Task 2 Step 3 connected Git).
+- [x] **Step 6: Commit and push** (the push gives a Vercel preview URL for the UI, once Task 2 Step 3 connected Git).
 
 ```bash
 git add src/lib/embed/handshake.ts "src/app/(embed)/embed/" && git commit -m "Embed page: SSO handshake, in-memory session, first screen" && git push
@@ -809,7 +809,7 @@ git add src/lib/embed/handshake.ts "src/app/(embed)/embed/" && git commit -m "Em
 - Create: `docs/decisions/2026-11-04-embed-session-token.md`
 - Modify: `knowledge/ghl-facts.md` (the "Custom Page SSO" section), `docs/decisions/2026-10-22-database-trust-model.md` (the "Open" item)
 
-- [ ] **Step 1: Decision note.**
+- [x] **Step 1: Decision note.**
 
 ```markdown
 # Embed session token
@@ -828,11 +828,11 @@ It is not a Supabase JWT. The trust-model note left open whether custom HS256 JW
 The client RLS policies (`current_client_id()`) remain and are tested. If a browser-side Supabase query is ever needed, mint a Supabase-signed token then, with the signing key the project uses at that time.
 ```
 
-- [ ] **Step 2: Facts.** Replace the "(To fill in during Phase 0 Part E...)" line with what was learned: the message names (`REQUEST_USER_DATA` out, `REQUEST_USER_DATA_RESPONSE` in, payload in `event.data.payload`), the encryption (CryptoJS passphrase mode, reproduced with `openssl enc -aes-256-cbc -md md5`), the fields (`userId`, `companyId`, `role`, `type` agency or location, `activeLocation` only in a location context, `userName`, `email`), where the Live and Testing URLs are set, and anything the end-to-end test in Task 12 reveals (for example whether the Testing URL is served to the developer's own agency).
+- [x] **Step 2: Facts.** Replace the "(To fill in during Phase 0 Part E...)" line with what was learned: the message names (`REQUEST_USER_DATA` out, `REQUEST_USER_DATA_RESPONSE` in, payload in `event.data.payload`), the encryption (CryptoJS passphrase mode, reproduced with `openssl enc -aes-256-cbc -md md5`), the fields (`userId`, `companyId`, `role`, `type` agency or location, `activeLocation` only in a location context, `userName`, `email`), where the Live and Testing URLs are set, and anything the end-to-end test in Task 12 reveals (for example whether the Testing URL is served to the developer's own agency).
 
-- [ ] **Step 3: Close the open item** in the trust-model note: "Resolved 2026-11-04: not needed, see `2026-11-04-embed-session-token.md`."
+- [x] **Step 3: Close the open item** in the trust-model note: "Resolved 2026-11-04: not needed, see `2026-11-04-embed-session-token.md`."
 
-- [ ] **Step 4: Commit.**
+- [x] **Step 4: Commit.**
 
 ```bash
 git add docs/decisions knowledge/ghl-facts.md && git commit -m "Record the embed session decision and the Custom Page SSO facts"

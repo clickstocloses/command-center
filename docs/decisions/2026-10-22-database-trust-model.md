@@ -25,3 +25,4 @@ A server-only model with no client policies would work for Phase 0, but then the
 ## Open
 
 - Whether custom JWTs signed with the project's legacy HS256 secret are accepted by the cloud project once it's on asymmetric signing keys. Verify in Part E before relying on it. Fallback: issue client sessions through Supabase Auth anonymous sign-in with `client_id` in app metadata.
+  - **Resolved 2026-11-04: not needed.** The embed uses its own HMAC-signed session token and server-side reads scoped by the token's client id. See `2026-11-04-embed-session-token.md`.
