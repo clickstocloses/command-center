@@ -71,7 +71,7 @@ Expected: `main` is at the merge commit, new branch created.
 
 ### Task 2: Create the Vercel project and connect GitHub
 
-- [ ] **Step 1: Link.** From the project folder. Answer: set up and deploy? `Y`. Scope: `automated-agency-systems`. Link to existing project? `N`. Project name: `command-center`. Directory: `./`. Modify settings? `N`.
+- [x] **Step 1: Link.** From the project folder. Answer: set up and deploy? `Y`. Scope: `automated-agency-systems`. Link to existing project? `N`. Project name: `command-center`. Directory: `./`. Modify settings? `N`.
 
 ```bash
 vercel link --scope automated-agency-systems
@@ -79,7 +79,7 @@ vercel link --scope automated-agency-systems
 
 Expected: `.vercel/project.json` appears (gitignored, confirmed in `.gitignore` line 21).
 
-- [ ] **Step 2: Find the production address.**
+- [x] **Step 2: Find the production address.**
 
 ```bash
 vercel project inspect command-center --scope automated-agency-systems
@@ -87,7 +87,7 @@ vercel project inspect command-center --scope automated-agency-systems
 
 Expected: a line with the production domain, normally `command-center.vercel.app` or `command-center-<suffix>.vercel.app`. Write it down as `PROD_URL` (with `https://`) for the next tasks.
 
-- [ ] **Step 3: Connect the GitHub repo** so every push gets a preview and `main` deploys to production.
+- [x] **Step 3: Connect the GitHub repo** so every push gets a preview and `main` deploys to production.
 
 ```bash
 vercel git connect https://github.com/clickstocloses/command-center.git --scope automated-agency-systems
@@ -108,7 +108,7 @@ printf '\n# Part E: signs the in-memory embed session token. 32 random bytes, ba
 printf '\n# Part E: embed session\nEMBED_SESSION_SECRET=         # server only. 32 random bytes, base64. Signs the in-memory embed session token\n' >> .env.example
 ```
 
-- [ ] **Step 2: Push the variables to Vercel.** One line per variable, for `production` and again for `preview`. The values are read from `.env.local` so nothing is typed into the chat. Run this once with `ENV=production`, then once with `ENV=preview`.
+- [x] **Step 2: Push the variables to Vercel.** One line per variable, for `production` and again for `preview`. The values are read from `.env.local` so nothing is typed into the chat. Run this once with `ENV=production`, then once with `ENV=preview`.
 
 ```bash
 ENV=production
@@ -125,7 +125,7 @@ printf '%s' "PROD_URL" | vercel env add NEXT_PUBLIC_APP_URL $ENV
 
 Replace `PROD_URL` with the address from Task 2 (for `preview`, use it too: previews can't do OAuth anyway, and the value keeps links sane). Expected: "Added Environment Variable" ten times per environment.
 
-- [ ] **Step 3: Check the list, values hidden.**
+- [x] **Step 3: Check the list, values hidden.**
 
 ```bash
 vercel env ls
@@ -133,7 +133,7 @@ vercel env ls
 
 Expected: ten names, each listed for Production and Preview. No value is printed.
 
-- [ ] **Step 4: First production deploy** (from the `main` checkout so it matches what Git will deploy later).
+- [x] **Step 4: First production deploy** (from the `main` checkout so it matches what Git will deploy later).
 
 ```bash
 git checkout main && vercel --prod --scope automated-agency-systems && git checkout feat/part-e-vercel-sso
@@ -141,7 +141,9 @@ git checkout main && vercel --prod --scope automated-agency-systems && git check
 
 Expected: build passes (it mirrors `npm run build`), ends with the production URL.
 
-- [ ] **Step 5: Smoke test.**
+> Done 2026-11-04 from the `feat/part-e-vercel-sso` working tree instead of `main`, because `main` still held only the first commit. Production URL: `https://command-center-five-navy.vercel.app`. Vercel created the project with the framework preset "Other"; fixed with `vercel project update command-center --framework nextjs --yes`. The link step also appended duplicate `.vercel` and `.env*` lines to `.gitignore`, reverted.
+
+- [x] **Step 5: Smoke test.**
 
 ```bash
 curl -s -o /dev/null -w "%{http_code}\n" PROD_URL/ && curl -s -o /dev/null -w "%{http_code}\n" PROD_URL/admin/login
