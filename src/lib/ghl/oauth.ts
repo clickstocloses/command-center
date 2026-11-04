@@ -208,3 +208,55 @@ export async function mintLocationToken(agencyAccessToken: string, companyId: st
   );
   return parseLocationTokenResponse(body, companyId);
 }
+
+export type InstalledLocation = { id: string; name: string | null };
+
+/** Validates one page of GET /oauth/installedLocations. Only locations with the app installed count. */
+export function parseInstalledLocations(raw: unknown): InstalledLocation[] {
+  if (!raw || typeof raw !== "object") throw new Error("Installed locations response was not an object.");
+  const rows = (raw as Record<string, unknown>).locations;
+  if (!Array.isArray(rows)) throw new Error("Installed locations response had no locations array.");
+  const installed: InstalledLocation[] = [];
+  for (const row of rows) {
+    if (!row || typeof row !== "object") continue;
+    const record = row as Record<string, unknown>;
+    if (record.isInstalled !== true) continue;
+    const id = stringOrNull(record._id);
+    if (!id) continue;
+    installed.push({ id, name: stringOrNull(record.name) });
+  }
+  return installed;
+}
+
+const INSTALLED_PAGE_SIZE = 100;
+
+/**
+ * Every sub-account in the agency that has the app installed. Used when an
+ * agency install comes back without approvedLocations. Needs oauth.readonly.
+ */
+export async function fetchInstalledLocations(agencyAccessToken: string, companyId: string): Promise<InstalledLocation[]> {
+  const { appId } = ghlEnv();
+  const all: InstalledLocation[] = [];
+  for (let skip = 0; ; skip += INSTALLED_PAGE_SIZE) {
+    const params = new URLSearchParams({
+      companyId,
+      appId,
+      isInstalled: "true",
+      limit: String(INSTALLED_PAGE_SIZE),
+      skip: String(skip),
+    });
+    const response = await fetch(`${GHL_API_BASE}/oauth/installedLocations?${params}`, {
+      headers: { Accept: "application/json", Authorization: `Bearer ${agencyAccessToken}`, Version: GHL_API_VERSION },
+    });
+    const body: unknown = await response.json().catch(() => null);
+    if (!response.ok) {
+      const detail = body && typeof body === "object" ? JSON.stringify(body).slice(0, 300) : response.statusText;
+      throw new Error(`HighLevel installedLocations request failed (${response.status}): ${detail}`);
+    }
+    const page = parseInstalledLocations(body);
+    all.push(...page);
+    const rows = (body as Record<string, unknown>).locations as unknown[];
+    if (rows.length < INSTALLED_PAGE_SIZE) break;
+  }
+  return all;
+}

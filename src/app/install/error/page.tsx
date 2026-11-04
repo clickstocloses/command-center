@@ -9,7 +9,9 @@ const REASONS: Record<string, string> = {
   no_code: "HighLevel didn't send an authorization code. Start the install again from the link.",
   state: "This install didn't start from our link, or the browser lost track of it. Start again from the install link.",
   no_locations:
-    "HighLevel approved the install but no sub-accounts were selected. Start again and tick at least one sub-account.",
+    "HighLevel approved the install but reports no sub-accounts with the app installed. Start again and tick at least one sub-account.",
+  installed_lookup:
+    "HighLevel wouldn't list the sub-accounts that have the app. The app may be missing the oauth.readonly scope in the developer portal.",
   location_token:
     "HighLevel wouldn't issue a sub-account token from the agency install. The app may be missing the oauth.write scope in the developer portal.",
   exchange: "HighLevel refused the token exchange. The app's client secret or redirect URL may be wrong.",

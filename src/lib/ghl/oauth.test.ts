@@ -3,6 +3,7 @@ import { GHL_SCOPES } from "./env";
 import {
   buildInstallUrl,
   newOauthState,
+  parseInstalledLocations,
   parseLocationTokenResponse,
   parseTokenResponse,
   verifyOauthState,
@@ -115,5 +116,28 @@ describe("parseLocationTokenResponse (minted from the agency token)", () => {
   it("rejects a response without a location id or access token", () => {
     expect(() => parseLocationTokenResponse({ access_token: "la", expires_in: 1 }, "co_1")).toThrow(/location/i);
     expect(() => parseLocationTokenResponse({ expires_in: 1, locationId: "loc_1" }, "co_1")).toThrow(/access_token/i);
+  });
+});
+
+describe("parseInstalledLocations", () => {
+  it("keeps only locations where the app is installed", () => {
+    const parsed = parseInstalledLocations({
+      locations: [
+        { _id: "loc_1", name: "Northside", isInstalled: true },
+        { _id: "loc_2", name: "Brightline", isInstalled: false },
+        { _id: "loc_3", isInstalled: true },
+        { name: "no id", isInstalled: true },
+      ],
+      count: 4,
+    });
+    expect(parsed).toEqual([
+      { id: "loc_1", name: "Northside" },
+      { id: "loc_3", name: null },
+    ]);
+  });
+
+  it("rejects a response without a locations array", () => {
+    expect(() => parseInstalledLocations({ count: 0 })).toThrow(/locations/i);
+    expect(() => parseInstalledLocations(null)).toThrow();
   });
 });

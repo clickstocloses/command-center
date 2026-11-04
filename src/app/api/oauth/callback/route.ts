@@ -5,6 +5,7 @@ import { fetchLocationWithToken } from "@/lib/ghl/locations";
 import {
   OAUTH_STATE_COOKIE,
   exchangeCodeForTokens,
+  fetchInstalledLocations,
   mintLocationToken,
   verifyOauthState,
   type InstallTokens,
@@ -65,7 +66,9 @@ export async function GET(request: NextRequest) {
     console.error("oauth callback failed:", message);
     const reason = /locationToken/i.test(message)
       ? "location_token"
-      : /token request failed/i.test(message)
+      : /installedLocations/i.test(message)
+        ? "installed_lookup"
+        : /token request failed/i.test(message)
         ? "exchange"
         : "save";
     return NextResponse.redirect(new URL(`/install/error?reason=${reason}`, origin));
@@ -74,15 +77,24 @@ export async function GET(request: NextRequest) {
 
 /**
  * A sub-account install gives one location token. An agency install gives an
- * agency token plus the approved locations; we store the agency token and mint
- * a location token for each.
+ * agency token and, sometimes, the approved locations. When that list is empty
+ * HighLevel still knows which sub-accounts have the app, so ask it. Then store
+ * the agency token and mint a location token for each sub-account.
  */
 async function locationTokensFrom(tokens: InstallTokens): Promise<LocationTokens[]> {
   if (tokens.kind === "location") return [tokens];
 
   await saveAgencyTokens(tokens);
+
+  let locationIds = tokens.approvedLocations;
+  if (locationIds.length === 0) {
+    const installed = await fetchInstalledLocations(tokens.accessToken, tokens.companyId);
+    locationIds = installed.map((location) => location.id);
+    console.info(`oauth callback: no approvedLocations, installedLocations reports ${locationIds.length}`);
+  }
+
   const minted: LocationTokens[] = [];
-  for (const locationId of tokens.approvedLocations) {
+  for (const locationId of locationIds) {
     minted.push(await mintLocationToken(tokens.accessToken, tokens.companyId, locationId));
   }
   return minted;
